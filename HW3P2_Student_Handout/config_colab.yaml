@@ -1,0 +1,106 @@
+Name: asr_1k_256_v1
+tokenization:
+  token_type: 1k
+  token_map:
+    char: hw3lib/data/tokenizer_jsons/tokenizer_char.json
+    1k: hw3lib/data/tokenizer_jsons/tokenizer_1000.json
+    5k: hw3lib/data/tokenizer_jsons/tokenizer_5000.json
+    10k: hw3lib/data/tokenizer_jsons/tokenizer_10000.json
+data:
+  root: ''
+  train_partition: train-clean-100
+  val_partition: dev-clean
+  test_partition: test-clean
+  subset: 1.0
+  batch_size: 2
+  NUM_WORKERS: 0
+  norm: global_mvn
+  num_feats: 80
+  specaug: true
+  specaug_conf:
+    apply_freq_mask: true
+    freq_mask_width_range: 10
+    num_freq_mask: 2
+    apply_time_mask: true
+    time_mask_width_range: 40
+    num_time_mask: 2
+  lazy_loading: true
+model:
+  input_dim: 80
+  time_reduction: 8
+  reduction_method: conv
+  d_model: 256
+  num_encoder_layers: 4
+  num_decoder_layers: 3
+  num_encoder_heads: 4
+  num_decoder_heads: 4
+  d_ff_encoder: 1024
+  d_ff_decoder: 1024
+  encoder_pos_encoding: rope
+  decoder_pos_encoding: rope
+  norm_type: rmsnorm
+  ffn_type: swiglu
+  qk_norm: true
+  dropout: 0.1
+  layer_drop_rate: 0.0
+  weight_tying: true
+training:
+  use_wandb: true
+  wandb_run_id: none
+  gradient_accumulation_steps: 8
+  wandb_project: HW3P2-F26
+  validation_batches: 50
+loss:
+  label_smoothing: 0.05
+  ctc_weight: 0.2
+optimizer:
+  name: adamw
+  lr: 0.0003
+  weight_decay: 0.01
+  param_groups: []
+  layer_decay:
+    enabled: false
+    decay_rate: 0.75
+  sgd:
+    momentum: 0.9
+    nesterov: true
+    dampening: 0
+  adam:
+    betas:
+    - 0.9
+    - 0.999
+    eps: 1.0e-08
+    amsgrad: false
+  adamw:
+    betas:
+    - 0.9
+    - 0.98
+    eps: 1.0e-08
+    amsgrad: false
+scheduler:
+  name: cosine
+  reduce_lr:
+    mode: min
+    factor: 0.1
+    patience: 10
+    threshold: 0.0001
+    threshold_mode: rel
+    cooldown: 0
+    min_lr: 1.0e-07
+    eps: 1.0e-08
+  cosine:
+    T_max: 19
+    eta_min: 1.0e-05
+    last_epoch: -1
+  cosine_warm:
+    T_0: 10
+    T_mult: 10
+    eta_min: 1.0e-07
+    last_epoch: -1
+  warmup:
+    enabled: true
+    type: linear
+    epochs: 1
+    start_factor: 0.1
+    end_factor: 1.0
+planned_epochs: 20
